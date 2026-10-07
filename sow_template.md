@@ -1,7 +1,7 @@
 # CS 457 Project Statement of Work (SOW) & Protocol Specification Template
 
-**Student Name:** Mayur Bhat 
-**Date:** [2026-09-19]  
+**Student Name:** Mayur Bhat  
+**Date:** 2026-10-06  
 **Course:** CS 457 - Computer Networks  
 **Target Server Domain:** `server.mayur.edu`  
 
@@ -9,22 +9,12 @@
 
 ## 1. Game Selection & Scope (Sprint 0)
 
-> Planning is going to be an iterative process through the sprints so you don't have to have all the details now. Focus on big overview concepts. You will be updating the SOW as we plan.
-> You have a lot of freedom to choose a game. There are a couple caveats.  
-
-> - It must run in the console. The lab nodes won't be able to handle extensive graphics.
-> - It has to be self-contained. You can use a internet-connector to download you code, but because the architecture must run 5 nodes you won't be able to run 
-> - You are encouraged to use python, but I'm not going to make it a strict requirement. The instructor and TA's ability to help with C or Rust, etc will be diminished in other languages.
-
 ### 1.1 Game Overview
-- **Chosen Game:** Hangman
+- **Chosen Game:** Co-op Hangman
 - **Player Capacity:** 2 Players (Simulated via 2 CML Client nodes)
-- **Game Summary:** One player sets a hidden word and administers hints while another player tries to guess the word letter by letter.
+- **Game Summary:** 
 
-### 1.2 Core Game Rules & Win/Draw Conditions
-- **Turn Mechanics:** The game state only progresses when the guesser makes a guess or asks the host for a hint.
-- **Victory Condition:** Either the guesser guesses the correct word, or runs out of guesses.
-- **Draw/Tie Condition:** There cannot be a draw in this game.
+Once two clients are connected, the server will pick a hidden word for each player to guess. It will choose one player to guess first, alternating who is guessing after that (guesses out of turn are ignored by the server). Either the player can guess a letter, showing where the letter appears in the word to the lobby, or they can try to guess the full hidden word, ending the game if correct. If the letter does not appear in the word, or a player guesses the word incorrectly, the game records a strike. After 6 strikes, the players both lose. The goal is for players to end the game in the fewest turns possible.
 
 ---
 
@@ -32,37 +22,25 @@
 
 ### 2.1 Message Transport & Serialization Format
 - **Transport Protocol:** TCP
-- **Serialization Format:** [JSON / Fixed-Header Binary / Delimited Text]
-- **Framing Mechanism:** [e.g., Newline-delimited (`\n`) JSON payloads OR 4-byte big-endian length prefix]
+- **Serialization Format:** Newline delimited JSON
+
+#### Framing Examples:
+- *Wire Stream Example:* 
+- *JSON Schema Definition:*
+  ```json
+  {
+    
+  }
+  ```
 
 ### 2.2 Message Schema Definitions
 
 #### Message Types:
-1. `CONNECT` (Client -> Server): Request to join the game room.
-2. `LOBBY_WAIT` (Server -> Client): Notification that server is waiting for Player 2.
-3. `GAME_START` (Server -> Clients): Game initiated, assigns roles (e.g. Player X vs Player O).
-4. `MOVE` (Client -> Server): Player action (e.g., cell coordinates or answer choice).
-5. `STATE_UPDATE` (Server -> Clients): Broadcast current game board / state and active player turn.
-6. `GAME_OVER` (Server -> Clients): Victory / Draw notification with final scores.
-7. `ERROR` (Server -> Client): Invalid move or malformed packet error.
-
-#### Example JSON Protocol Schema:
-```json
-{
-  "msg_type": "MOVE",
-  "player_id": "Player_1",
-  "payload": {
-    "row": 0,
-    "col": 2
-  },
-  "timestamp": 1727000000
-}
-```
+1. 
 
 ---
 
 ### 2.3 Game State Machine (FSM) Design (Sprint 1 Deliverable)
-- **State Transitions:** Detail state flow: `INIT` -> `WAITING_FOR_PLAYERS` -> `PLAYER_TURN` -> `EVALUATE_MOVE` -> `CHECK_WIN_DRAW` -> `GAME_OVER` -> `CLEANUP`.
 
 ---
 
@@ -75,6 +53,7 @@
 ### 3.2 State & Score Synchronization Across Clients
 - **Turn Enforcement:** Detail how the server validates active player ID before processing moves and broadcasts updated turn notifications to all clients.
 - **Score & Board Synchronization:** Describe how state broadcasts keep client screens synchronized in real time.
+- **Mermaid Sequence Diagram:** Embed a sequence diagram authored strictly in **Mermaid (`sequenceDiagram`) syntax** illustrating client move submission, server authority validation, board mutation, and synchronized state broadcast to all clients.
 
 ---
 
